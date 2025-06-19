@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import AddTaskComponent from "./components/AddEditTaskComponent/AddEditTaskComponent";
+import ErrorPage from "./components/ErrorPageComponent/ErrorPage";
+import ListTaskComponent from "./components/ListTaskComponent/ListTaskComponent";
+import { useEffect, useState } from "react";
+import { fetchAvalaibleToDos } from "./http";
 function App() {
-  const [count, setCount] = useState(0)
+  const [listOfTodos, setListOfTodos] = useState([]);
+  const [reqFilter, setReqFilter] = useState('all');
+  const [quantityOfTodos, setQuantityOfTodos] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState();
+  let fetchTodos = async function () {
+    setIsFetching(true);
+    try {
+      const Todos = await fetchAvalaibleToDos(reqFilter);
+      setListOfTodos(Todos.data);
+      setQuantityOfTodos(Todos.info);
+    } catch (error) {
+      setError({ message: error.message || "Could not fetch Todos" });
+      setIsFetching(false);
+    }
+    setIsFetching(false);
+  }
+  useEffect(() => {  
+    fetchTodos();
+  }, [reqFilter]);
+
+  if (error) {
+    return <ErrorPage title="An error occured!" message={error.message} />;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main>
+      <AddTaskComponent
+        reFetchListOfTodo={fetchTodos}
+        quantityOfAllTodos={quantityOfTodos}
+        setAllQuantityOfTodos={setQuantityOfTodos}
+        setAllTodos={setListOfTodos}
+        allTodos={listOfTodos}
+      />
+      <ListTaskComponent
+        reqFilter={reqFilter}
+        setReqFilter={setReqFilter}
+        reFetchListOfTodo={fetchTodos}
+        allTypesOfQuantity={quantityOfTodos}
+        setAllTodos={setListOfTodos}  
+        allTodos={listOfTodos}
+        loadingText="Fetching todo Items data..."
+        isLoading={isFetching}
+      />
+    </main>
+  );
 }
 
-export default App
+export default App;

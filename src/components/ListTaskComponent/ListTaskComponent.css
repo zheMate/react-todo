@@ -1,0 +1,37 @@
+.list-task-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 50vw;
+    align-items: center;
+}
+
+.list-task-statuses {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    margin: 1.2em 0em;
+    min-width: 29vw;
+}
+
+.list-of-tasks {
+    display: flex;
+    flex-direction: column;        
+    gap: 1.4em;
+    list-style: none;
+    padding: 0px;
+    min-width: fit-content;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    color: rgb(238, 227, 213);;
+
+}
+.edit-task-button{
+    background-color: #134611;
+}
+.delete-task-button{
+    background-color: #D64550;
+}

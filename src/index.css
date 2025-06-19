@@ -25,7 +25,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  place-items: center baseline;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -42,7 +43,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #213547;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -52,6 +53,19 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input[type="text"]{
+  border: none;
+  outline: none;
+  background-color: transparent;
+  line-height: 1.5;
+  min-width: 25vw;
+}
+input[type="text"]:focus {
+  color: rgb(238, 227, 213);
+  border-bottom: 2px solid rgb(238, 227, 213);
+  transition: border-bottom 2s ;
 }
 
 @media (prefers-color-scheme: light) {
@@ -65,4 +79,19 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+main{
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.error {
+  max-width: 40rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #f4c7c7;
+  color: #3e0505;
+}
+input:checked {
+  text-decoration: line-through;
 }
