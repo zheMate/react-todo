@@ -1,4 +1,7 @@
 button.selected {
-  background-color: #000;
+  background-color: #1769aa;
   color: #fff;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 2px 8px rgba(33,150,243,0.08);
 }

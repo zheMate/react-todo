@@ -6,15 +6,15 @@ import { fetchAvalaibleToDos } from "./http";
 function App() {
   const [listOfTodos, setListOfTodos] = useState([]);
   const [reqFilter, setReqFilter] = useState('all');
-  const [quantityOfTodos, setQuantityOfTodos] = useState([]);
+  const [quantityOfTodos, setQuantityOfTodos] = useState({});
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
-  let fetchTodos = async function () {
+  async function fetchTodos() {
     setIsFetching(true);
     try {
-      const Todos = await fetchAvalaibleToDos(reqFilter);
-      setListOfTodos(Todos.data);
-      setQuantityOfTodos(Todos.info);
+      const todos = await fetchAvalaibleToDos(reqFilter);
+      setListOfTodos(todos.data);
+      setQuantityOfTodos(todos.info);
     } catch (error) {
       setError({ message: error.message || "Could not fetch Todos" });
       setIsFetching(false);
@@ -33,10 +33,6 @@ function App() {
     <main>
       <AddTaskComponent
         reFetchListOfTodo={fetchTodos}
-        quantityOfAllTodos={quantityOfTodos}
-        setAllQuantityOfTodos={setQuantityOfTodos}
-        setAllTodos={setListOfTodos}
-        allTodos={listOfTodos}
       />
       <ListTaskComponent
         reqFilter={reqFilter}

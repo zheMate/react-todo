@@ -1,6 +1,11 @@
 import { useState } from "react";
 import "./SingleTaskComponent.css";
-import { apiRequest } from "../../http";
+import TrashCan from "../../assets/trash-can.svg";
+import EditPencil from "../../assets/edit-pencil.svg";
+import { editTodos, deleteTodos } from "../../http";
+import UISVGButton from "../../UI/UISVGButton";
+import UIButton from "../../UI/UIButton";
+
 export default function SingleTaskComponent({
   singleTodo,
   setAllTodos,
@@ -10,6 +15,7 @@ export default function SingleTaskComponent({
   const [isEditing, setIsEditing] = useState(false);
   const [newTodoItemTitle, setNewTodoItemTitle] = useState(singleTodo.title);
   const [errors, setError] = useState({});
+
   const handleCheckIsDone = async (todoItemId) => {
     const listAllTodos = allTodos.map((todoItem) =>
       todoItem.id === todoItemId
@@ -20,24 +26,19 @@ export default function SingleTaskComponent({
     const checkedTodo = listAllTodos.filter(
       (todoItem) => todoItem.id === todoItemId
     );
-    const updateOptions = {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        isDone: checkedTodo[0].isDone,
-        title: checkedTodo[0].title,
-      }),
-    };
-    const reqUrl = `https://easydev.club/api/v1/todos/${todoItemId}`;
-    const result = await apiRequest(reqUrl, updateOptions);
+    await editTodos(todoItemId, {
+      isDone: checkedTodo[0].isDone,
+      title: checkedTodo[0].title,
+    });
     reFetchListOfTodo();
-    if (result) throw new Error(result);
   };
 
   const handleEdit = async () => {
     setIsEditing((editingState) => !editingState);
+  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await handleUpdateTodoItem(singleTodo.id);
   };
   const handleUpdateTodoItem = async (todoItemId) => {
     const ValidationError = validateFormInput(newTodoItemTitle);
@@ -46,20 +47,11 @@ export default function SingleTaskComponent({
       const todoItemForUpdate = allTodos.filter(
         (todoItem) => todoItem.id === todoItemId
       );
-      const updateOptions = {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          isDone: todoItemForUpdate[0].isDone,
-          title: newTodoItemTitle,
-        }),
-      };
-      const reqUrl = `https://easydev.club/api/v1/todos/${todoItemId}`;
-      const result = await apiRequest(reqUrl, updateOptions);
+      const result = await editTodos(todoItemId, {
+        isDone: todoItemForUpdate[0].isDone,
+        title: newTodoItemTitle,
+      });
       reFetchListOfTodo();
-      if (result) throw new Error(result);
       setIsEditing(false);
     }
   };
@@ -67,15 +59,11 @@ export default function SingleTaskComponent({
     let errors = {};
     if (!newTodoItemTitle) {
       errors.title = "title is required";
-    } else if (!enoughCharactersForTitle(newTodoItemTitle)) {
+    } else if (newTodoItemTitle.length < 2 || newTodoItemTitle.length > 64) {
       errors.title =
         "title should be 2-64 characters, Cyrillic, Latin or Numbers";
     }
     return errors;
-  };
-  const enoughCharactersForTitle = (title) => {
-    const regExp = /^[A-Za-zА-Яа-я0-9]{2,64}$/;
-    return regExp.test(title);
   };
   const handleChange = async (event) => {
     setNewTodoItemTitle(event.target.value);
@@ -86,16 +74,10 @@ export default function SingleTaskComponent({
   };
 
   const handleDelete = async (todoItemId) => {
-    const listAllTodos = allTodos.filter(
-      (todoItem) => todoItem.id !== todoItemId
-    );
-    setAllTodos(listAllTodos);
-    const deleteOptions = { method: "DELETE" };
-    const reqUrl = `https://easydev.club/api/v1/todos/${todoItemId}`;
-    const result = await apiRequest(reqUrl, deleteOptions);
+    await deleteTodos(todoItemId);
     reFetchListOfTodo();
-    if (result) throw new Error(result);
   };
+
   return (
     <li key={singleTodo.id} className="task">
       <input
@@ -103,88 +85,51 @@ export default function SingleTaskComponent({
         checked={singleTodo.isDone}
         onChange={() => handleCheckIsDone(singleTodo.id)}
       />
-      <div>
-        {isEditing ? (
-          <input
-            type="text"
-            required
-            value={newTodoItemTitle}
-            onChange={handleChange}
-          />
-        ) : (
-          <label
-            style={
-              singleTodo.isDone ? { textDecoration: "line-through" } : null
-            }
-          >
-            {newTodoItemTitle}
-          </label>
-        )}
-        <div className="edit-block">
-          {errors.title && <span className="error">{errors.title}</span>}
-        </div>
-      </div>
-      {isEditing ? (
-        <button
-          type="submit"
-          className="edit-task-button"
-          onClick={() => handleUpdateTodoItem(singleTodo.id)}
-        >
-          Save
-        </button>
-      ) : (
-        <button type="submit" className="edit-task-button" onClick={handleEdit}>
-          <svg
-            className="w-6 h-6 text-gray-800 dark:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+      <form onSubmit={handleSubmit}>
+        <div>
+          {isEditing ? (
+            <input
+              type="text"
+              required
+              value={newTodoItemTitle}
+              onChange={handleChange}
             />
-          </svg>
-        </button>
-      )}
-      {isEditing ? (
-        <button
-          type="submit"
+          ) : (
+            <label
+              className={singleTodo.isDone ? "done" : ""}
+              style={null}
+            >
+              {newTodoItemTitle}
+            </label>
+          )}
+          <div className="edit-block">
+            {errors.title && <span className="error">{errors.title}</span>}
+          </div>
+        </div>
+        {isEditing ? (
+          <UIButton type="submit"
+            className="edit-task-button"
+            onClick={() => handleUpdateTodoItem(singleTodo.id)}
+            >
+            Save
+          </UIButton>
+        ) : (
+          <UISVGButton type="button" className="edit-task-button" onClick={handleEdit}>
+            <img className="button-icon" src={EditPencil} alt="Edit pencil" />
+          </UISVGButton>
+        )}
+        {isEditing ? (
+          <UIButton type="button" className="delete-task-button" onClick={handleCancelUpdate}>
+            Cancel
+          </UIButton>
+        ) : null}
+        <UISVGButton type="button"
           className="delete-task-button"
-          onClick={handleCancelUpdate}
+          onClick={() => handleDelete(singleTodo.id)}
         >
-          Cancel
-        </button>
-      ) : null}
-      <button
-        type="submit"
-        className="delete-task-button"
-        onClick={() => handleDelete(singleTodo.id)}
-      >
-        <svg
-          className="w-6 h-6 text-gray-800 dark:text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
-          />
-        </svg>
-      </button>
+          <img className="button-icon" src={TrashCan} alt="Trash can" />
+        </UISVGButton>
+      </form>
     </li>
   );
 }

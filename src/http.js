@@ -5,7 +5,7 @@ export async function fetchAvalaibleToDos(reqFilter) {
     if (!response.ok) {
         throw new Error("Failed to fetch places");
     }
-    return resData; 
+    return resData;
 }
 
 
@@ -18,20 +18,32 @@ export async function addTodos(todoItemData) {
         }
     });
     const resData = await response.json();
-    if(!response.ok){
+    if (!response.ok) {
         throw new Error("Failed to add user data.");
     }
     return resData;
 }
 
-export const apiRequest = async (url = '', optionsObj = null, errMsg = null) => {
-    try{
-        const response = await fetch(url, optionsObj);
-        if(!response.ok) throw new Error('Please reload the app');
-    }catch (err) {
-        errMsg = err.message;
-    }finally{
-        return errMsg;
+export async function editTodos(todoItemId, todoItemData) {
+    const response = await fetch(`https://easydev.club/api/v1/todos/${todoItemId}`, {
+        method: "PUT",
+        headers: {
+            "Content-type": "application/json",
+        },
+        body: JSON.stringify(todoItemData),
+    });
+    const resData = await response.json();
+    if (!response.ok) {
+        throw new Error("Failed to edit user data.");
     }
 }
-export default apiRequest;
+
+export async function deleteTodos(todoItemId) {
+    try{
+        const response = await fetch(`https://easydev.club/api/v1/todos/${todoItemId}`, {
+        method: "DELETE",
+    });
+    }catch(e){
+        throw new Error("Failed to delete user data.");
+    }
+}

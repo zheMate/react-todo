@@ -1,15 +1,14 @@
+import UIButton from "../../UI/UIButton"
 import "./ButtonComponent.css";
 
-export default function ButtonComponent ({ countity, buttonText, buttonTypeName, reqFilter, setReqFilter}) {
+export default function ButtonComponent ({ onClick, className, children}) {
   
     return (
-        <button
-            className={buttonTypeName === reqFilter ? "selected" : null}
-            type="button"
-            onClick={()=>setReqFilter(buttonTypeName)}
+        <UIButton 
+        onClick={onClick}
+        className={className}
         >
-            {buttonText} ({countity})
-        </button>
-        
+            {children}
+        </UIButton>
     );
 }

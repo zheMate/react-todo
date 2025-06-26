@@ -18,54 +18,62 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
-a:hover {
-  color: #535bf2;
-}
+
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center baseline;
-  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
+  background: #f6f8fa;
+  color: #222;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#root {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 2.5rem 0 0 0;
+  text-align: left;
 }
 
-button {
+h1, h2, h3 {
+  color: #222;
+}
+
+button{
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  border: none;
+  padding: 0.7em 1.5em;
+  font-size: 1.1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #213547;
+  background-color: #2196f3;
+  color: #fff;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background 0.2s;
 }
-button:hover {
-  border-color: #646cff;
-}
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-input[type="text"]{
-  border: none;
+input[type="text"] {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  background: #fff;
+  color: #222;
+  margin-bottom: 0.5em;
   outline: none;
-  background-color: transparent;
-  line-height: 1.5;
-  min-width: 25vw;
+  transition: border 0.2s;
 }
 input[type="text"]:focus {
-  color: rgb(238, 227, 213);
-  border-bottom: 2px solid rgb(238, 227, 213);
-  transition: border-bottom 2s ;
+  border: 1.5px solid #2196f3;
 }
 
 @media (prefers-color-scheme: light) {
@@ -80,10 +88,10 @@ input[type="text"]:focus {
     background-color: #f9f9f9;
   }
 }
-main{
+main {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 1.5em;
 }
 .error {
   max-width: 40rem;
@@ -91,6 +99,7 @@ main{
   padding: 1rem;
   background-color: #f4c7c7;
   color: #3e0505;
+  border-radius: 8px;
 }
 input:checked {
   text-decoration: line-through;
